@@ -683,6 +683,11 @@ NSString *dzn_implementationKey(id target, SEL selector)
 - (void)didMoveToSuperview
 {
     self.frame = self.superview.bounds;
+    UIScrollView *superview = (UIScrollView *)self.superview;
+    
+    CGRect frame = self.frame;
+    frame.origin.x = -superview.contentInset.left;
+    self.frame = frame;
     
     [UIView animateWithDuration:0.25
                      animations:^{_contentView.alpha = 1.0;}
@@ -862,13 +867,9 @@ NSString *dzn_implementationKey(id target, SEL selector)
     NSLayoutConstraint *centerXConstraint = [self equallyRelatedConstraintWithView:self.contentView attribute:NSLayoutAttributeCenterX];
     NSLayoutConstraint *centerYConstraint = [self equallyRelatedConstraintWithView:self.contentView attribute:NSLayoutAttributeCenterY];
     
-    UIScrollView *scrollView = (UIScrollView *)self.superview;
-    CGFloat xOffset = -scrollView.contentInset.left * 2;
-    
-    
     [self addConstraint:centerXConstraint];
     [self addConstraint:centerYConstraint];
-    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(xOffset)-[contentView]|" options:0 metrics:@{@"xOffset": @(xOffset)} views:@{@"contentView": self.contentView}]];
+    [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[contentView]|" options:0 metrics:nil views:@{@"contentView": self.contentView}]];
     
     
     // When a custom offset is available, we adjust the vertical constraints' constants
